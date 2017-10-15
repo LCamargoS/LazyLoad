@@ -35,51 +35,54 @@ function lazyLoad(){
         /* Get all elements with selected class */
         var elements = document.getElementsByClassName(ll.class);
 
-        for(i in elements){
+        /* Get first element */ 
+        var element = elements[0];
 
-            var element = elements[i];
+        /* Page is the sum of the "distance" from the top and the height of the screen */
+        var page = window.pageYOffset + window.innerHeight;
 
-            /* Page is the sum of the "distance" from the top and the height of the screen */
-            var page = window.pageYOffset + window.innerHeight;
+        /* Distance from the element to the top of the page */
+        var offsetTop = element.offsetTop;
 
-            /* Distance from the element to the top of the page */
-            var offsetTop = element.offsetTop;
+        /* If is in screen */
+        if(page > offsetTop){
 
-            /* If is in screen */
-            if(page > offsetTop){
+            /* Can be customizable by the dev */
+            if(ll.onBeforeShow){
+                ll.onBeforeShow(element);
+            }
 
-                /* Can be customizable by the dev */
-                if(ll.onBeforeShow){
-                    ll.onBeforeShow(element);
+            /* Get the source data */
+            var src = element.getAttribute(ll.dataSource);
+
+            /* If there is any value*/
+            if(src){
+                element.setAttribute('src',src);
+
+                /* This method can be setted by the developer */
+                if(ll.onShow){
+                    ll.onShow(element);
+                    }
+
+                /* Remove Class from first element */
+                element.classList.remove(ll.class);
+
+                /* Execute again before loaded */
+                element.onload = function(){
+                    ll.check();    
+                    }
+                
+            } else {
+
+                /* User can set an "debug mode" to get more data */
+                if(ll.debug){
+                    console.error('Element does not have the data-source attribute ('+ll.dataSource+')', element)
                 }
 
-                /* Get the source data */
-                var src = element.getAttribute(ll.dataSource);
+                ll.onError(element);
 
-                /* If there is any value*/
-                if(src){
-                    element.setAttribute('src',src);
-
-                    /* This method can be setted by the developer */
-                    if(ll.onShow){
-                        ll.onShow(element);
-                    }
-
-                    /* Add element to array, it will be used too remove its class */
-                    ll.loaded.push(element);
-
-                } else {
-
-                    /* User can set an "debug mode" to get more data */
-                    if(ll.debug){
-                        console.error('Element does not have the data-source attribute ('+ll.dataSource+')', element)
-                    }
-
-                    ll.onError(element);
-
-                } /* Else end */
-            } /* Element height */
-        } /* For end */
+            } /* Else end */
+        } /* Element height */
 
         /* remove class from loaded elements */
         ll.removeLoaded()
