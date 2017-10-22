@@ -35,6 +35,10 @@ function lazyLoad(){
         /* Get all elements with selected class */
         var elements = document.getElementsByClassName(ll.class);
 
+        if(elements.length==0){
+            return false;
+            }
+
         /* Get first element */ 
         var element = elements[0];
 
@@ -42,10 +46,10 @@ function lazyLoad(){
         var page = window.pageYOffset + window.innerHeight;
 
         /* Distance from the element to the top of the page */
-        var offsetTop = element.offsetTop;
+        var offsetTop = element.getBoundingClientRect();
 
         /* If is in screen */
-        if(page > offsetTop){
+        if(page > offsetTop.top){
 
             /* Can be customizable by the dev */
             if(ll.onBeforeShow){
@@ -105,16 +109,15 @@ function lazyLoad(){
     }
 
     ll.init = function(){
-        window.onload = function(){
-            ll.firstLoad();
+        
+        ll.firstLoad();
 
-            if(ll.debug){
-                console.log('LazyLoad:' , ll);
-            }
+        if(ll.debug){
+            console.log('LazyLoad:' , ll);
+        }
 
-            window.onscroll = function(){
-                ll.check();
-            }
+        window.onscroll = function(){
+            ll.check();
         }
     }
 }
